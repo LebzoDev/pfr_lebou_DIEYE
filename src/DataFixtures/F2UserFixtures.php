@@ -6,12 +6,13 @@ use Faker\Factory;
 use App\Entity\User;
 use App\Entity\Profil;
 use App\Repository\ProfilRepository;
+use App\DataFixtures\F1ProfilFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserFixtures extends Fixture
+class F2UserFixtures extends Fixture
 {
     private $encoder;
     private $repoProfil;
@@ -52,13 +53,13 @@ class UserFixtures extends Fixture
             /******************************************************************************/
             $profil = new Profil();
             if ($i<=2) {
-                $user->setProfil($this->getReference(ProfilFixtures::PROFIL_ADMIN_REFERENCE));
+                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_ADMIN_REFERENCE));
             }elseif($i<=4){
-                $user->setProfil($this->getReference(ProfilFixtures::PROFIL_FORMATEUR_REFERENCE));
+                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_FORMATEUR_REFERENCE));
             }elseif($i<=6){
-                $user->setProfil($this->getReference(ProfilFixtures::PROFIL_CM_REFERENCE));
+                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_CM_REFERENCE));
             }else{
-                $user->setProfil($this->getReference(ProfilFixtures::PROFIL_APPRENANT_REFERENCE));
+                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_APPRENANT_REFERENCE));
             }
             $user->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)

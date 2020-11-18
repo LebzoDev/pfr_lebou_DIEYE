@@ -7,7 +7,7 @@ use App\Entity\Profil;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
-class ProfilFixtures extends Fixture
+class F1ProfilFixtures extends Fixture
 {
      /******************************************************************************/
      /********************************PREMIERE METHODE *****************************/
