@@ -31,7 +31,7 @@ class F3ApprenantFixtures extends Fixture
             $password =$this->encoder->encodePassword($user,"passer");
             $profil = new Profil();
 
-            //$user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_APPRENANT_REFERENCE));
+            $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_APPRENANT_REFERENCE));
             
             $user->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)

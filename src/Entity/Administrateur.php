@@ -4,14 +4,14 @@ namespace App\Entity;
 
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\ApprenantRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Repository\AdministrateurRepository;
 
 /**
  * @ApiResource()
- * @ORM\Entity(repositoryClass=ApprenantRepository::class)
+ * @ORM\Entity(repositoryClass=AdministrateurRepository::class)
  */
-class Apprenant extends User
+class Administrateur extends User
 {
     /**
      * @ORM\Id

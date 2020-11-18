@@ -14,43 +14,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- * attributes={"pagination_items_per_page"=2},
- * collectionOperations = {
+ *    attributes={"pagination_items_per_page"=2 },
+ *    normalizationContext={"groups"={"show_profils"}},
+ *    collectionOperations = {
  *      "get","post",
- *      "get_role_admin"={
- *      "method"="GET",
- *      "path"="/admin/profils",
- *      "controller"="App\Controller\ProfilController::get_profils"
- *      },
- *      "get_post_admin"={
- *      "method"="POST",
- *      "path"="/admin/profils",
- *      "controller"="App\Controller\ProfilController::post_profils"
- *      },
- *      "get_list_user_profil"={
- *      "method"="GET",
- *      "path"="/admin/profils/{id}/users",
- *      "controller"="App\Controller\ProfilController::get_list_users_profils"
- *      },
  *  },
  * itemOperations = {
- *      "get","put","patch",
- *      "get_profil_id"={
- *      "method"="GET",
- *      "path"="/admin/profils/{id}",
- *      "controller"="App\Controller\ProfilController::get_profil"
- *      },
- *      "put_profil_id"={
- *      "method"="PUT",
- *      "path"="/admin/profils/{id}",
- *      "controller"="App\Controller\ProfilController::put_profil"
- *      },
- *       "archive_profil"={
- *      "method"="PUT",
- *      "path"="/admin/profils/{id}/archive",
- *      "controller"="App\Controller\ProfilController",
- *      "controller"="App\Controller\ProfilController::archive_profil"
- *      }
+ *      "get","put"
  * })
  * @ORM\Entity(repositoryClass=ProfilRepository::class)
  */
@@ -61,21 +31,18 @@ class Profil
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups("show_profils")
-     * @Groups("show_users_profils")
      * 
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     *  @Groups("show_profils")
-     * @Groups("show_users_profils")
+     * @Groups("show_profils")
      */
     private $libelle;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="profil")
-     * @Groups("show_users_profils")
      * @ApiSubresource()
      */
     private $users;
@@ -83,7 +50,6 @@ class Profil
     /**
      * @ORM\Column(type="boolean", nullable=true)
      * @Groups("show_profils")
-     * @Groups("show_users_profils")
      */
     private $archive;
 

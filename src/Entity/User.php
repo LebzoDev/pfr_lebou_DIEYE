@@ -5,15 +5,30 @@ namespace App\Entity;
 use App\Entity\Profil;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping\InheritanceType;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant","formateur"="Formateur", "administrateur"="Administrateur", "cm"="CM"})
  * @ApiResource(
- *  attributes={"pagination_items_per_page"=2}
- * )
+ *    attributes={"pagination_items_per_page"=2 },
+ *    normalizationContext={"groups"={"show_users"}},
+ *    collectionOperations = {
+ *      "get","post",
+ *  },
+ * itemOperations = {
+ *      "get","put"
+ * })
+ *  @ApiFilter(SearchFilter::class, properties={"archive": true})
  */
 class User implements UserInterface
 {
@@ -21,13 +36,12 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("show_users_profils")
+     * @Groups("show_users")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     *
      */
     protected $username;
 
@@ -42,19 +56,22 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
+     * @Groups("show_users")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $profil;
+    protected $profil;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("show_users_profils")
+     * @Groups("show_users")
      */
     protected $prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("show_users_profils")
+     * @Groups("show_users")
      */
     protected $nom;
 
