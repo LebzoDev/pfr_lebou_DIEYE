@@ -23,7 +23,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *    attributes={"pagination_items_per_page"=2 },
  *    normalizationContext={"groups"={"show_users"}},
  *    collectionOperations = {
- *      "get","post",
+ *      "get","post"
  *  },
  * itemOperations = {
  *      "get","put"
@@ -45,7 +45,9 @@ class User implements UserInterface
      */
     protected $username;
 
-   
+    /**
+    * @Groups("show_profils")
+    */
     protected $roles = [];
 
     /**
@@ -74,6 +76,11 @@ class User implements UserInterface
      * @Groups("show_users")
      */
     protected $nom;
+
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $photo;
 
     public function getId(): ?int
     {
@@ -180,6 +187,18 @@ class User implements UserInterface
     public function setNom(string $nom): self
     {
         $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto($photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }

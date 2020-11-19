@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class FormateurFixtures extends Fixture
+class F5AdministrateurFixtures extends Fixture
 {
     private $encoder;
     private $repoProfil;
@@ -29,7 +29,7 @@ class FormateurFixtures extends Fixture
             $password =$this->encoder->encodePassword($user,"passer");
             $profil = new Profil();
 
-            $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_FORMATEUR_REFERENCE));
+            $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_ADMIN_REFERENCE));
             
             $user->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)

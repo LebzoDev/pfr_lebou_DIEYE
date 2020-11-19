@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Controller\ProfilController;
 use App\Repository\ProfilRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
@@ -14,15 +15,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *    attributes={"pagination_items_per_page"=2 },
+ *    attributes={"pagination_items_per_page"=2,
+ *    "security"="is_granted('ROLE_ADMINISTRATEUR')"},
  *    normalizationContext={"groups"={"show_profils"}},
  *    collectionOperations = {
- *      "get","post",
+ *      "get","post"
  *  },
  * itemOperations = {
  *      "get","put"
  * })
  * @ORM\Entity(repositoryClass=ProfilRepository::class)
+ * @ApiFilter(SearchFilter::class, properties={"archive": true})
  */
 class Profil
 {
