@@ -6,8 +6,11 @@ use App\Entity\Profil;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping\InheritanceType;
+<<<<<<< HEAD
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
+=======
+>>>>>>> 75d3f3d456e1a89f9710020f6187d98b1cd4017c
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -17,8 +20,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @InheritanceType("JOINED")
+<<<<<<< HEAD
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant","formateur"="Formateur", "administrateur"="Administrateur", "cm"="CM"})
+=======
+>>>>>>> 75d3f3d456e1a89f9710020f6187d98b1cd4017c
  * @ApiResource(
  *    attributes={"pagination_items_per_page"=2 },
  *    normalizationContext={"groups"={"show_users"}},
