@@ -6,11 +6,8 @@ use App\Entity\Profil;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping\InheritanceType;
-<<<<<<< HEAD
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
-=======
->>>>>>> 75d3f3d456e1a89f9710020f6187d98b1cd4017c
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -22,15 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @InheritanceType("JOINED")
-<<<<<<< HEAD
  * @DiscriminatorColumn(name="discr", type="string")
-<<<<<<< HEAD
  * @DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant","formateur"="Formateur", "cm"="CM"})
-=======
- * @DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant","formateur"="Formateur", "administrateur"="Administrateur", "cm"="CM"})
-=======
->>>>>>> 75d3f3d456e1a89f9710020f6187d98b1cd4017c
->>>>>>> refs/remotes/origin/master
+
  * @ApiResource(
  *    routePrefix="/admin",
  *    attributes={"pagination_items_per_page"=2 },
