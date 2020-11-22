@@ -12,6 +12,8 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ApiResource(
@@ -22,7 +24,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *      "get","post"
  *  },
  * itemOperations = {
- *      "get","put"
+ *      "get","put","delete"
  * })
  * @ORM\Entity(repositoryClass=ProfilRepository::class)
  * @ApiFilter(SearchFilter::class, properties={"archive": true})
@@ -41,6 +43,8 @@ class Profil
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("show_profils")
+     * @Groups("show_users")
+     * @Assert\NotBlank
      */
     private $libelle;
 
@@ -59,6 +63,7 @@ class Profil
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->archive=false;
     }
 
     public function getId(): ?int

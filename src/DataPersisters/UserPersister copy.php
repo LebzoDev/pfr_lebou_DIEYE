@@ -7,28 +7,30 @@ use App\Entity\Profil;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 
-class ProfilPersister implements DataPersisterInterface{
+class UserPersister implements DataPersisterInterface{
 
     private $manager;
     private $request;
     private $decorated;
-    private $normalized;
-    public function __construct(EntityManagerInterface $manager, RequestStack $request,NormalizerInterface $normalized){
+    public function __construct(EntityManagerInterface $manager, RequestStack $request){
         $this->manager = $manager;
-        $this->normalized = $normalized;
         $this->request = $request->getCurrentRequest();
     }
 
     public function supports($data): bool{
-        return $data instanceof Profil;
+        return $data instanceof User;
     }
 
     public function persist($data, array $context=[])
     {
-      if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
+        if (isset($context['item_operation_name']) && $context['item_operation_name']=='put'){
+            $this->manager->persist($data);
+            $this->manager->flush();
+        }
+
+        if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
             $data->setArchive(false);
             $this->manager->persist($data);
             $this->manager->flush();
@@ -37,12 +39,7 @@ class ProfilPersister implements DataPersisterInterface{
     
     public function remove($data){
 
-        $data->setArchive(false);
-        $users = $data->getUsers();
-        foreach ($users as $key => $user) {
-           $user->setArchive(true);
-        }
-        $this->manager->persist($data);
+        $this->manager->remove($data);
         $this->manager->flush();
     }
     

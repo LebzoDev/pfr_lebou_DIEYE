@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use Faker\Factory;
 use App\Entity\Profil;
 use App\Entity\Apprenant;
+use App\Entity\Formateur;
 use App\Repository\ProfilRepository;
 use App\DataFixtures\F1ProfilFixtures;
 use Doctrine\Persistence\ObjectManager;
@@ -25,7 +26,7 @@ class F4FormateurFixtures extends Fixture
         $faker = Factory::create("fr_FR");
         
         for ($i=1; $i <=10 ; $i++) { 
-            $user = new Apprenant();
+            $user = new Formateur();
             $password =$this->encoder->encodePassword($user,"passer");
             $profil = new Profil();
 
@@ -34,7 +35,8 @@ class F4FormateurFixtures extends Fixture
             $user->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)
                  ->setUsername($faker->userName)
-                 ->setPassword($password);
+                 ->setPassword($password)
+                 ->setArchive(false);
             
             $manager->persist($user);
 

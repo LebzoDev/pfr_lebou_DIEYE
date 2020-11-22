@@ -13,13 +13,16 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant","formateur"="Formateur", "administrateur"="Administrateur", "cm"="CM"})
+ * @DiscriminatorMap({"user" = "User", "apprenant" = "Apprenant","formateur"="Formateur", "cm"="CM"})
  * @ApiResource(
+ *    routePrefix="/admin",
  *    attributes={"pagination_items_per_page"=2 },
  *    normalizationContext={"groups"={"show_users"}},
  *    collectionOperations = {
@@ -28,7 +31,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * itemOperations = {
  *      "get","put"
  * })
- *  @ApiFilter(SearchFilter::class, properties={"archive": true})
+ * @ApiFilter(SearchFilter::class, properties={"archive": false})
+ * 
  */
 class User implements UserInterface
 {
@@ -38,21 +42,24 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * @Groups("show_users")
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank
      */
     protected $username;
 
     /**
     * @Groups("show_profils")
+    * @Groups("show_users")
     */
     protected $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\NotBlank
      */
     protected $password;
 
@@ -74,13 +81,28 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Groups("show_users_profils")
      * @Groups("show_users")
+     * @Assert\NotBlank
      */
     protected $nom;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
      */
-    private $photo;
+    protected $photo;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Email(
+     *    message = "The email '{{ value }}' is not a valid email.")
+     * @Assert\Regex("/^[a-zA-Z]([a-zA-Z] | [0-9])+@[a-z]\.[a-z]{3}$/")
+     */
+
+    protected $email;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $archive;
 
     public function getId(): ?int
     {
@@ -198,7 +220,31 @@ class User implements UserInterface
 
     public function setPhoto($photo): self
     {
-        $this->photo = $photo;
+        $this->photo = base64_encode($photo);
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getArchive(): ?bool
+    {
+        return $this->archive;
+    }
+
+    public function setArchive(?bool $archive): self
+    {
+        $this->archive = $archive;
 
         return $this;
     }

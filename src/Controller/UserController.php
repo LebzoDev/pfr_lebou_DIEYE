@@ -53,6 +53,7 @@ class UserController extends AbstractController
         $photo = fopen($photo->getRealPath(),"rb");
         $user->setProfil($profil);
         $user->setPhoto($photo);
+        
         $password = $user->getPassword();
         $user->setPassword($this->encoder->encodePassword($user,$password));
 

@@ -64,7 +64,8 @@ class F2UserFixtures extends Fixture
             $user->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)
                  ->setUsername($faker->userName)
-                 ->setPassword($password);
+                 ->setPassword($password)
+                 ->setArchive(false);
             
             $manager->persist($user);
 

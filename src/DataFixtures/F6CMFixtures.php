@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\CM;
 use Faker\Factory;
 use App\Entity\Profil;
 use App\Entity\Apprenant;
@@ -25,7 +26,7 @@ class F6CMFixtures extends Fixture
         $faker = Factory::create("fr_FR");
         
         for ($i=1; $i <=10 ; $i++) { 
-            $user = new Apprenant();
+            $user = new CM();
             $password =$this->encoder->encodePassword($user,"passer");
             $profil = new Profil();
 
@@ -34,7 +35,8 @@ class F6CMFixtures extends Fixture
             $user->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)
                  ->setUsername($faker->userName)
-                 ->setPassword($password);
+                 ->setPassword($password)
+                 ->setArchive(false);
             
             $manager->persist($user);
 

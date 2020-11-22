@@ -8,20 +8,22 @@ use App\Repository\FormateurRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      collectionOperations = {
+ *  },
+ * itemOperations = {
+ *      "get"={
+ *          "security"="is_granted('view', object) and object",
+ *          "security_message"="Bakhoul"
+ *        },
+ *      "put"={
+ *          "security"="is_granted('view', object) and object",
+ *          "security_message"="Boooy boy beugouma liii"
+ * },
+ * })
  * @ORM\Entity(repositoryClass=FormateurRepository::class)
  */
 class Formateur extends User
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+   
 }
