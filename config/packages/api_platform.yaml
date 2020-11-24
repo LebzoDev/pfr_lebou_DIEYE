@@ -1,4 +1,7 @@
 api_platform:
+    formats:
+        form:
+            mime_types: ['multipart/form-data']
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
     patch_formats:

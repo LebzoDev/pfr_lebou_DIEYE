@@ -5,6 +5,7 @@ namespace App\DataPersisters;
 
 use App\Entity\Profil;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 
@@ -26,14 +27,16 @@ class UserPersister implements DataPersisterInterface{
     public function persist($data, array $context=[])
     {
         if (isset($context['item_operation_name']) && $context['item_operation_name']=='put'){
-            $this->manager->persist($data);
-            $this->manager->flush();
+            //$this->manager->persist($data);
+            dd($context,$data);
+            //$this->manager->flush();
         }
 
         if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
             $data->setArchive(false);
             $this->manager->persist($data);
-            $this->manager->flush();
+            dd($context,$data);
+            //$this->manager->flush();
         }
     } 
     

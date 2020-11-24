@@ -17,8 +17,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ApiResource(
+ *    routePrefix="/admin",
  *    attributes={"pagination_items_per_page"=2,
- *    "security"="is_granted('ROLE_ADMINISTRATEUR')"},
+ *    "security"="is_granted('ROLE_USER')"},
  *    normalizationContext={"groups"={"show_profils"}},
  *    collectionOperations = {
  *      "get","post"

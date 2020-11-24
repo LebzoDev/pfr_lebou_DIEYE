@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *    attributes={"pagination_items_per_page"=2 },
  *    normalizationContext={"groups"={"show_users"}},
  *    collectionOperations = {
- *      "get","post"
+ *      "get","post",
  *  },
  * itemOperations = {
  *      "get","put"
@@ -216,12 +216,12 @@ class User implements UserInterface
 
     public function getPhoto()
     {
-        return $this->photo;
+        return base64_encode($this->photo);
     }
 
     public function setPhoto($photo): self
     {
-        $this->photo = base64_encode($photo);
+        $this->photo=$photo;
 
         return $this;
     }
