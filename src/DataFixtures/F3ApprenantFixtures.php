@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use DateTime;
 use Faker\Factory;
 use App\Entity\User;
+use App\Entity\Promo;
 use App\Entity\Profil;
 use App\Entity\Apprenant;
 use App\DataFixtures\ProfilFixtures;
@@ -25,24 +27,30 @@ class F3ApprenantFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create("fr_FR");
-        
-        for ($i=1; $i <=10 ; $i++) { 
-            $user = new Apprenant();
-            $password =$this->encoder->encodePassword($user,"passer");
-            $profil = new Profil();
-
-            $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_APPRENANT_REFERENCE));
-            
-            $user->setPrenom($faker->firstName)
-                 ->setNom($faker->lastName)
-                 ->setUsername($faker->userName)
-                 ->setPassword($password)
-                 ->setArchive(false);
-            
-            $manager->persist($user);
-
+        //BOUCLE POUR LES PROMOS
+        for ($j=0; $j < 3 ; $j++) {
+            $promo = new Promo();
+            $promo->setTitre($faker->word)
+                  ->setDateDebut(new \DateTime())
+                  ->setDateFin(new \DateTime())
+                  ->setDescription($faker->text)
+                  ->setLieu($faker->city)
+                  ->setReferenceAgate($faker->text(50))
+                  ->setLangue($faker->randomElement(['anglais', 'français']));
+            //BOUCLE POUR LES APPRENANTS            
+            for ($i=1; $i <=10 ; $i++) {
+                $user = new Apprenant();
+                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_APPRENANT_REFERENCE))
+                     ->setPrenom($faker->firstName)
+                     ->setNom($faker->lastName)
+                     ->setUsername($faker->userName)
+                     ->setPassword($this->encoder->encodePassword($user,"passer"))
+                     ->setArchive(false)
+                     ->setPromo($promo);           
+                $manager->persist($user);
+            }
+            $manager->persist($promo);
         }
-
         $manager->flush();
-    }
+}
 }

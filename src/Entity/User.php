@@ -11,9 +11,10 @@ use Doctrine\ORM\Mapping\DiscriminatorMap;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 
 /**
@@ -30,9 +31,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      "get","post",
  *  },
  * itemOperations = {
- *      "get","put"
+ *      "get","put","delete"
  * })
- * @ApiFilter(SearchFilter::class, properties={"archive": false})
+ * @ApiFilter(BooleanFilter::class, properties={"archive"})
  * 
  */
 class User implements UserInterface
@@ -54,6 +55,7 @@ class User implements UserInterface
     /**
     * @Groups("show_profils")
     * @Groups("show_users")
+    * @Groups("affiche")
     */
     protected $roles = [];
 
@@ -68,6 +70,7 @@ class User implements UserInterface
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
      * @Groups("show_users")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups("affiche")
      */
     protected $profil;
 
@@ -75,6 +78,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Groups("show_users_profils")
      * @Groups("show_users")
+     * @Groups("affiche")
      */
     protected $prenom;
 
@@ -83,25 +87,29 @@ class User implements UserInterface
      * @Groups("show_users_profils")
      * @Groups("show_users")
      * @Assert\NotBlank
+     * @Groups("affiche")
      */
     protected $nom;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
+     * @Groups("affiche")
      */
     protected $photo;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Email(
-     *    message = "The email '{{ value }}' is not a valid email.")
+     *      message = "The email '{{ value }}' is not a valid email.")
      * @Assert\Regex("/^[a-zA-Z]([a-zA-Z] | [0-9])+@[a-z]\.[a-z]{3}$/")
+     * @Groups("affiche")
      */
 
     protected $email;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups("affiche")
      */
     protected $archive;
 
@@ -216,7 +224,7 @@ class User implements UserInterface
 
     public function getPhoto()
     {
-        return base64_encode($this->photo);
+        return $this->photo;
     }
 
     public function setPhoto($photo): self

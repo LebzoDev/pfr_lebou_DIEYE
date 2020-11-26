@@ -27,21 +27,14 @@ class F4FormateurFixtures extends Fixture
         
         for ($i=1; $i <=10 ; $i++) { 
             $user = new Formateur();
-            $password =$this->encoder->encodePassword($user,"passer");
-            $profil = new Profil();
-
-            $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_FORMATEUR_REFERENCE));
-            
-            $user->setPrenom($faker->firstName)
+            $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_FORMATEUR_REFERENCE))
+                 ->setPrenom($faker->firstName)
                  ->setNom($faker->lastName)
                  ->setUsername($faker->userName)
-                 ->setPassword($password)
+                 ->setPassword($this->encoder->encodePassword($user,"passer"))
                  ->setArchive(false);
-            
             $manager->persist($user);
-
         }
-
         $manager->flush();
     }
 }

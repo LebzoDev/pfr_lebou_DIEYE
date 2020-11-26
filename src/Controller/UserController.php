@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Apprenant;
+use App\Service\AddUtilisateur;
 use App\Controller\UserController;
 use App\Repository\UserRepository;
 use App\Repository\ProfilRepository;
@@ -29,7 +30,6 @@ class UserController extends AbstractController
         $this->manager = $manager;
         $this->repoprofil = $repoprofil;
         $this->repoUser = $repoUser;
-
     }
     /**
      * @Route(
@@ -86,36 +86,31 @@ class UserController extends AbstractController
      *     }
      * )
      */
-    public function putUser(Request $request,$id)
+    public function putUser(Request $request,$id,AddUtilisateur $getFields)
     {
         $userDonne = $this->repoUser->findOneBy(['id'=>$id]);
         $data = $request->getContent();
-        $photo = $request->files->get("photo");
-        dd($request->getPathInfo());
-        //$photo = fopen($photo->getRealPath(),"rb");
-        //$photo = base64_encode($photo);
-       
-        if (isset($photo)) {
-            $userDonne->setPhoto($photo);
-        }
-        /*$user = new User();
-        $user->setPrenom($array['prenom']);
-        $user->setNom($array['nom']);
-        $user->setUsername($array['username']);
-        $user->setPassword($array['password']);
-        $profil = $this->repoprofil->findOneBy([]);
+        
+        //Définir le tableau qui contiendra les données recupérées
+        $dataGot = [];
+        //Appliquer la fonction de notre service
+        $dataGot = $getFields->transformData($data);
 
-        $user->setProfil($profil);
-        $user->setPhoto($photo);
-        
-        $password = $user->getPassword();
-        $user->setPassword($this->encoder->encodePassword($user,$password));
-        */
-        //$this->manager->persist($userDonne);
-        //$this->manager->flush();
-        fclose($photo);
+        if (isset($dataGot['photo'])) {
+            $photo = fopen('php://memory','r+');
+            fwrite($photo, $dataGot['photo']);
+            rewind($photo);
+        }
+        foreach ($dataGot as $key => $value) {
+            $methode = 'set'.ucfirst($key);
+            if(method_exists($userDonne,$methode)){
+                $userDonne->$methode($value);
+            }
+        }
        
-        
-        return $this->json($userDonne,201);
+        $this->manager->persist($userDonne);
+        $this->manager->flush();
+
+        return $this->json(['message'=>'success'],201);
     }
 }

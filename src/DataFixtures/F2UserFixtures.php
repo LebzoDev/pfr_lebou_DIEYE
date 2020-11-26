@@ -27,33 +27,9 @@ class F2UserFixtures extends Fixture
         for ($i=1; $i <=10 ; $i++) { 
             $user = new User();
             $password =$this->encoder->encodePassword($user,"passer");
-
-            /******************************************************************************/
-            /********************************PREMIERE METHODE *****************************/
-            /******************************************************************************/
-            /*if ($i<=2) {
-                $profil = $this->repoProfil->findOneBy(['libelle'=>'ADMINISTRATEUR']);
-            }elseif($i<=4){
-                $profil = $this->repoProfil->findOneBy(['libelle'=>'FORMATEUR']);
-            }elseif($i<=6){
-                $profil = $this->repoProfil->findOneBy(['libelle'=>'CM']);
-            }else{
-                $profil = $this->repoProfil->findOneBy(['libelle'=>'APPRENANT']);
-            }
-
-            $user->setPrenom($faker->firstName)
-                 ->setNom($faker->lastName)
-                 ->setUsername($faker->userName)
-                 ->setPassword($password)
-                 ->setProfil($profil);
-            */
-
-             /******************************************************************************/
-            /********************************DEUXIEME METHODE *****************************/
-            /******************************************************************************/
             $profil = new Profil();
             if ($i<=2) {
-                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_ADMIN_REFERENCE));
+                $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_ADMINISTRATEUR_REFERENCE));
             }elseif($i<=4){
                 $user->setProfil($this->getReference(F1ProfilFixtures::PROFIL_FORMATEUR_REFERENCE));
             }elseif($i<=6){

@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ApprenantRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
@@ -15,7 +16,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
  *          "security_message"="Vous n'avez pas le droit !!!"
  *        },
  *       "post"={
- *          "security"="is_granted('ROLE_FORMATEUR)",
+ *          "security"="is_granted('ROLE_FORMATEUR')",
  *          "security_message"="Vous n'avez pas le droit !!!"
  *       }
  *  },
@@ -39,8 +40,15 @@ class Apprenant extends User
 {
     /**
      * @ORM\ManyToOne(targetEntity=ProfilSortie::class, inversedBy="apprenants")
+     * @Groups("affiche")
      */
     private $profilSortie;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Promo::class, inversedBy="apprenants")
+     * @Groups("affiche")
+     */
+    private $promo;
 
     public function getProfilSortie(): ?ProfilSortie
     {
@@ -50,6 +58,18 @@ class Apprenant extends User
     public function setProfilSortie(?ProfilSortie $profilSortie): self
     {
         $this->profilSortie = $profilSortie;
+
+        return $this;
+    }
+
+    public function getPromo(): ?Promo
+    {
+        return $this->promo;
+    }
+
+    public function setPromo(?Promo $promo): self
+    {
+        $this->promo = $promo;
 
         return $this;
     }
