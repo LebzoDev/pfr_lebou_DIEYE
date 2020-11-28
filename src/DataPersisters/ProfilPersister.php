@@ -16,6 +16,7 @@ class ProfilPersister implements DataPersisterInterface{
     private $request;
     private $decorated;
     private $normalized;
+
     public function __construct(EntityManagerInterface $manager, RequestStack $request,NormalizerInterface $normalized){
         $this->manager = $manager;
         $this->normalized = $normalized;
@@ -36,7 +37,6 @@ class ProfilPersister implements DataPersisterInterface{
     } 
     
     public function remove($data){
-
         $data->setArchive(false);
         $users = $data->getUsers();
         foreach ($users as $key => $user) {

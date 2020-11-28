@@ -16,11 +16,12 @@ class F1ProfilFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $array = ['ADMINISTRATEUR','FORMATEUR','CM','APPRENANT'];
+        $array = ['profil_admin','profil_formateur','profil_cm','profil_apprenant'];
+        $LibelleArray = ['ADMINISTRATEUR','FORMATEUR','CM','APPRENANT'];
         foreach ($array as $key => $value) {
             $profil = new Profil();
-            $profil->setLibelle($value);
-            $this->addReference(self::PROFIL_.$value._REFERENCE, $profil);
+            $profil->setLibelle($LibelleArray[$key]);
+            $this->addReference($value, $profil);
             $manager->persist($profil);
         }
         $manager->flush();

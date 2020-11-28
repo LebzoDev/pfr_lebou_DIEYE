@@ -4,10 +4,13 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CompetenceRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
  * @ApiResource(
@@ -30,14 +33,11 @@ use Doctrine\Common\Collections\ArrayCollection;
  *          "put"={
  *              "security"="is_granted('ROLE_ADMINISTRATEUR')",
  *              "security_message"="vous n'avez pas acces à ce resource"
- *           },
- *          "delete"={
- *              "security"="is_granted('ROLE_ADMINISTRATEUR')",
- *              "security_message"="vous n'avez pas acces à ce resource"
- *           },
+ *           }
  *      }
  * )
  * @ORM\Entity(repositoryClass=CompetenceRepository::class)
+ * @ApiFilter(BooleanFilter::class, properties={"archive"})
  */
 class Competence
 {
@@ -45,21 +45,25 @@ class Competence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("show_grpcompetences")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups("show_grpcompetences")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("show_grpcompetences")
      */
     private $descriptif;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("show_cgrpompetences")
      */
     private $archive;
 
@@ -76,6 +80,7 @@ class Competence
 
     public function __construct()
     {
+        $this->archive = false;
         $this->groupcompetences = new ArrayCollection();
         $this->niveaux = new ArrayCollection();
     }
@@ -159,7 +164,6 @@ class Competence
             $this->niveaux[] = $niveau;
             $niveau->setCompetence($this);
         }
-
         return $this;
     }
 

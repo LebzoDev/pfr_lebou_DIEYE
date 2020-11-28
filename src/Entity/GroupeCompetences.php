@@ -2,15 +2,46 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\GroupeCompetencesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     routePrefix="/admin",
+ *     collectionOperations={
+ *          "get"={
+ *               "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *               "security_message"="Vous n'avez pas acces à cette ressource",
+ *               "normalization_context"={"groups"={"show_grpcompetences"}},
+ *          },
+ *          "post"={
+ *              "security"="is_granted('ROLE_ADMINISTRATEUR')",
+ *               "security_message"="Vous n'avez pas acces à cette ressource",
+ *               "controller"="App\Controller\GroupeCompetencesController::addGroupCompetence",
+ *          }
+ *      },
+ *      itemOperations={
+ *          "get"={
+ *              "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *               "security_message"="Vous n'avez pas acces à cette ressource",
+ *               "normalization_context"={"groups"={"show_grpcompetences"}},
+ *          },
+ *          "put"={
+ *              "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *               "security_message"="Vous n'avez pas acces à cette ressource",
+ *               "controller"="App\Controller\GroupeCompetencesController::putGroupController"
+ *          }
+ *      }
+ * )
  * @ORM\Entity(repositoryClass=GroupeCompetencesRepository::class)
+ *  @ApiFilter(BooleanFilter::class, properties={"archive"})
  */
 class GroupeCompetences
 {
@@ -18,31 +49,38 @@ class GroupeCompetences
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("show_grpcompetences")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("show_grpcompetences")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("show_grpcompetences")
      */
     private $descriptif;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups("show_grpcompetences")
      */
     private $archive;
 
     /**
      * @ORM\ManyToMany(targetEntity=Competence::class, mappedBy="groupcompetences")
+     * @Groups("show_grpcompetences")
+     * @ApiSubresource()
      */
     private $competences;
 
     public function __construct()
     {
+        $this->archive = false;
         $this->competences = new ArrayCollection();
     }
 

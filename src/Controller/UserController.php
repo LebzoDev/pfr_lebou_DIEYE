@@ -90,6 +90,7 @@ class UserController extends AbstractController
     {
         $userDonne = $this->repoUser->findOneBy(['id'=>$id]);
         $data = $request->getContent();
+       
         
         //Définir le tableau qui contiendra les données recupérées
         $dataGot = [];
