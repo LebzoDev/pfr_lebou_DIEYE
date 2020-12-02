@@ -7,7 +7,9 @@ use App\Repository\PromoRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
@@ -16,7 +18,9 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  *      collectionOperations={
  *          "get"={
  *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
- *             "security_message"="Vous n'avez pas acces à ce service"
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "normalization_context"={"groups"={"show_ref_formateur_group"}},
+ *             "controller"="App\Controller\PromoController::admin_promo"
  *          },
  *          "admin_promo_principal"={
  *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
@@ -45,6 +49,7 @@ class Promo
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"show_ref_formateur_group"})
      */
     private $id;
 
@@ -85,6 +90,7 @@ class Promo
 
     /**
      * @ORM\OneToMany(targetEntity=Apprenant::class, mappedBy="promo")
+     * @ApiSubresource()
      */
     private $apprenants;
 
@@ -95,6 +101,8 @@ class Promo
 
     /**
      * @ORM\OneToMany(targetEntity=GroupePromo::class, mappedBy="promo")
+     * @ApiSubresource()
+     * @Groups({"show_ref_formateur_group"})
      */
     private $groupePromos;
 
@@ -106,6 +114,7 @@ class Promo
     /**
      * @ORM\ManyToOne(targetEntity=Referentiel::class, inversedBy="promos")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"show_ref_formateur_group"})
      */
     private $referentiel;
 
