@@ -41,13 +41,10 @@ class F2UserFixtures extends Fixture
                  ->setNom($faker->lastName)
                  ->setUsername($faker->userName)
                  ->setPassword($password)
-                 ->setArchive(false)
-                 ->setPhoto($faker->image($dir = '/tmp', $width = 640, $height = 480));
-            
+                 ->setArchive(false);
+                 //->setPhoto($faker->image($dir = '/tmp', $width = 640, $height = 480));
             $manager->persist($user);
-
         }
-
         $manager->flush();
     }
 }

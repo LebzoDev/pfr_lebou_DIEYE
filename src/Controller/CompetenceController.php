@@ -53,7 +53,7 @@ class CompetenceController extends AbstractController
                 $key_critereDev = 'critereDev'.$i;
                 $niveau->setLibelle($data->$key_libelle);
                 $niveau->setCritereDevaluation($data->$key_critereDev);
-                $niveau->setGroupDactions($data->$key_critereDev);
+                $niveau->setGroupDactions($data->$key_groupDac);
                 $this->manager->persist($niveau);
                 $competence->addNiveau($niveau);
             }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ApprenantRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -50,6 +52,16 @@ class Apprenant extends User
      */
     private $promo;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=GroupePromo::class, mappedBy="apprenants")
+     */
+    private $mygroupePromos;
+
+    public function __construct()
+    {
+        $this->mygroupePromos = new ArrayCollection();
+    }
+
     public function getProfilSortie(): ?ProfilSortie
     {
         return $this->profilSortie;
@@ -70,6 +82,33 @@ class Apprenant extends User
     public function setPromo(?Promo $promo): self
     {
         $this->promo = $promo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|GroupePromo[]
+     */
+    public function getMygroupePromos(): Collection
+    {
+        return $this->mygroupePromos;
+    }
+
+    public function addMygroupePromo(GroupePromo $mygroupePromo): self
+    {
+        if (!$this->mygroupePromos->contains($mygroupePromo)) {
+            $this->mygroupePromos[] = $mygroupePromo;
+            $mygroupePromo->addApprenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMygroupePromo(GroupePromo $mygroupePromo): self
+    {
+        if ($this->mygroupePromos->removeElement($mygroupePromo)) {
+            $mygroupePromo->removeApprenant($this);
+        }
 
         return $this;
     }

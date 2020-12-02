@@ -16,17 +16,17 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class F3ApprenantFixtures extends Fixture
 {
-
+/*
     private $encoder;
     private $repoProfil;
     public function __construct(UserPasswordEncoderInterface $encoder, ProfilRepository $repoProfil){
         $this->repoProfil = $repoProfil;
         $this->encoder = $encoder;
     }
-
+*/
     public function load(ObjectManager $manager)
     {
-        $faker = Factory::create("fr_FR");
+/*        $faker = Factory::create("fr_FR");
         //BOUCLE POUR LES PROMOS
         for ($j=0; $j < 3 ; $j++) {
             $promo = new Promo();
@@ -46,11 +46,14 @@ class F3ApprenantFixtures extends Fixture
                      ->setUsername($faker->userName)
                      ->setPassword($this->encoder->encodePassword($user,"passer"))
                      ->setArchive(false)
-                     ->setPromo($promo);           
+                     ->setPromo($promo);          
                 $manager->persist($user);
             }
             $manager->persist($promo);
         }
+ 
         $manager->flush();
+        */
 }
+
 }

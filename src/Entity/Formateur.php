@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FormateurRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
@@ -29,5 +31,43 @@ use ApiPlatform\Core\Annotation\ApiResource;
  */
 class Formateur extends User
 {
-   
+    /**
+     * @ORM\OneToMany(targetEntity=GroupePromo::class, mappedBy="formateur")
+     */
+    private $groupePromos;
+
+    public function __construct()
+    {
+        $this->groupePromos = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection|GroupePromo[]
+     */
+    public function getGroupePromos(): Collection
+    {
+        return $this->groupePromos;
+    }
+
+    public function addGroupePromo(GroupePromo $groupePromo): self
+    {
+        if (!$this->groupePromos->contains($groupePromo)) {
+            $this->groupePromos[] = $groupePromo;
+            $groupePromo->setFormateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupePromo(GroupePromo $groupePromo): self
+    {
+        if ($this->groupePromos->removeElement($groupePromo)) {
+            // set the owning side to null (unless already changed)
+            if ($groupePromo->getFormateur() === $this) {
+                $groupePromo->setFormateur(null);
+            }
+        }
+
+        return $this;
+    }
 }

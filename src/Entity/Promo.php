@@ -11,7 +11,31 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      routePrefix="/admin",
+ *      collectionOperations={
+ *          "get"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service"
+ *          },
+ *          "admin_promo_principal"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "path"="/principal",
+ *             "methods"="GET",
+ *             "controller"="App\COntroller\PromoController::admin_promo_principal"
+ *          },
+ *          "apprenants_attente"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "path"="promo/apprenants/attente",
+ *             "methods"="GET",
+ *             "controller"="App\COntroller\PromoController::apprenants_attente"
+ *          },"post"
+ *      },
+ *      itemOperations={
+ *          "get","put","delete"
+ *      })
  * @ORM\Entity(repositoryClass=PromoRepository::class)
  * @ApiFilter(BooleanFilter::class, properties={"archive"})
  */
@@ -69,10 +93,27 @@ class Promo
      */
     private $archive;
 
+    /**
+     * @ORM\OneToMany(targetEntity=GroupePromo::class, mappedBy="promo")
+     */
+    private $groupePromos;
+
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $avatar;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Referentiel::class, inversedBy="promos")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $referentiel;
+
     public function __construct()
     {
         $this->archive = false;
         $this->apprenants = new ArrayCollection();
+        $this->groupePromos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -205,4 +246,60 @@ class Promo
 
         return $this;
     }
+
+    /**
+     * @return Collection|GroupePromo[]
+     */
+    public function getGroupePromos(): Collection
+    {
+        return $this->groupePromos;
+    }
+
+    public function addGroupePromo(GroupePromo $groupePromo): self
+    {
+        if (!$this->groupePromos->contains($groupePromo)) {
+            $this->groupePromos[] = $groupePromo;
+            $groupePromo->setPromo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupePromo(GroupePromo $groupePromo): self
+    {
+        if ($this->groupePromos->removeElement($groupePromo)) {
+            // set the owning side to null (unless already changed)
+            if ($groupePromo->getPromo() === $this) {
+                $groupePromo->setPromo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAvatar()
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar($avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getReferentiel(): ?Referentiel
+    {
+        return $this->referentiel;
+    }
+
+    public function setReferentiel(?Referentiel $referentiel): self
+    {
+        $this->referentiel = $referentiel;
+
+        return $this;
+    }
+
+  
 }

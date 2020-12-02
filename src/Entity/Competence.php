@@ -78,11 +78,17 @@ class Competence
      */
     private $niveaux;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Referentiel::class, mappedBy="competencesVisees")
+     */
+    private $referentiels;
+
     public function __construct()
     {
         $this->archive = false;
         $this->groupcompetences = new ArrayCollection();
         $this->niveaux = new ArrayCollection();
+        $this->referentiels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -174,6 +180,33 @@ class Competence
             if ($niveau->getCompetence() === $this) {
                 $niveau->setCompetence(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Referentiel[]
+     */
+    public function getReferentiels(): Collection
+    {
+        return $this->referentiels;
+    }
+
+    public function addReferentiel(Referentiel $referentiel): self
+    {
+        if (!$this->referentiels->contains($referentiel)) {
+            $this->referentiels[] = $referentiel;
+            $referentiel->addCompetencesVisee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReferentiel(Referentiel $referentiel): self
+    {
+        if ($this->referentiels->removeElement($referentiel)) {
+            $referentiel->removeCompetencesVisee($this);
         }
 
         return $this;
