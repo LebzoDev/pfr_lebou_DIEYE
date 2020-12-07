@@ -41,8 +41,7 @@ class UserPersister implements DataPersisterInterface{
     } 
     
     public function remove($data){
-
-        $this->manager->remove($data);
+        $data->setArchive(true);
         $this->manager->flush();
     }
     

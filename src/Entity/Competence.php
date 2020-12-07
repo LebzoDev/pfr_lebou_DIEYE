@@ -75,6 +75,7 @@ class Competence
 
     /**
      * @ORM\OneToMany(targetEntity=Niveau::class, mappedBy="competence", orphanRemoval=true)
+     * @ApiSubresource()
      */
     private $niveaux;
 

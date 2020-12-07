@@ -6,6 +6,7 @@ use DateTime;
 use Faker\Factory;
 use App\Entity\Promo;
 use App\Entity\Apprenant;
+use App\Entity\Formateur;
 use App\Entity\GroupePromo;
 use App\Entity\Referentiel;
 use App\Repository\ProfilRepository;
@@ -30,7 +31,16 @@ class F8PromoReferenceFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create("fr_FR");
-        $formateur = $this->repoFormateur->findOneBy([]);
+
+        $formateur = new Formateur();
+        $formateur->setProfil($this->getReference(F1ProfilFixtures::PROFIL_FORMATEUR_REFERENCE))
+        ->setPrenom($faker->firstName)
+        ->setNom($faker->lastName)
+        ->setUsername($faker->userName)
+        ->setPassword($this->encoder->encodePassword($formateur,"passer"))
+        ->setArchive(false);
+        $manager->persist($formateur);
+        
         //BOUCLE POUR LES REFERENTIELS
         for ($j=0; $j < 3 ; $j++) {
            $referentiel = new Referentiel();
@@ -55,13 +65,16 @@ class F8PromoReferenceFixtures extends Fixture
                 for ($k=1; $k <=3 ; $k++) {
                     $groupPromo = new GroupePromo();
                     if($k==1){
-                        $groupPromo->setNom("principal");
+                        $groupPromo->setNom("Groupe Principal")
+                                   ->setType("principal");
                     }else{
-                        $groupPromo->setNom($faker->word);
+                        $groupPromo->setNom($faker->word)
+                                   ->setType("second");;
                     }
                     $groupPromo->setDateCreation(new DateTime())
                                ->setPromo($promo)
-                               ->setFormateur($formateur);
+                               ->addFormateur($formateur);
+                              
                     $manager->persist($groupPromo);
                 }
 

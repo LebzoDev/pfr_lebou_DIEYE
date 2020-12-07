@@ -32,7 +32,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 class Formateur extends User
 {
     /**
-     * @ORM\OneToMany(targetEntity=GroupePromo::class, mappedBy="formateur")
+     * @ORM\OneToMany(targetEntity=GroupePromo::class, mappedBy="formateurs")
      */
     private $groupePromos;
 
@@ -53,7 +53,7 @@ class Formateur extends User
     {
         if (!$this->groupePromos->contains($groupePromo)) {
             $this->groupePromos[] = $groupePromo;
-            $groupePromo->setFormateur($this);
+            $groupePromo->addFormateur($this);
         }
 
         return $this;
@@ -63,9 +63,7 @@ class Formateur extends User
     {
         if ($this->groupePromos->removeElement($groupePromo)) {
             // set the owning side to null (unless already changed)
-            if ($groupePromo->getFormateur() === $this) {
-                $groupePromo->setFormateur(null);
-            }
+                $groupePromo->removeFormateur($this);
         }
 
         return $this;

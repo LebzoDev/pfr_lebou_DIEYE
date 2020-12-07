@@ -20,25 +20,76 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
  *             "security_message"="Vous n'avez pas acces à ce service",
  *             "normalization_context"={"groups"={"show_ref_formateur_group"}},
- *             "controller"="App\Controller\PromoController::admin_promo"
+ *             "controller"="App\Controller\PromoController::admin_promo",
+ *             "path"="/promo"
  *          },
  *          "admin_promo_principal"={
  *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
  *             "security_message"="Vous n'avez pas acces à ce service",
  *             "path"="/principal",
  *             "methods"="GET",
- *             "controller"="App\COntroller\PromoController::admin_promo_principal"
+ *             "controller"="App\Controller\PromoController::admin_promo_principal"
  *          },
  *          "apprenants_attente"={
  *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR')",
  *             "security_message"="Vous n'avez pas acces à ce service",
- *             "path"="promo/apprenants/attente",
+ *             "path"="admin/promo/apprenants/attente",
  *             "methods"="GET",
- *             "controller"="App\COntroller\PromoController::apprenants_attente"
- *          },"post"
+ *             "controller"="App\Controller\PromoController::apprenants_attente",
+ *             "normalization_context"={"groups"={"apprenants_attente"}}
+ *          },
+ *        "post"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "controller"="App\Controller\PromoController::post::promo",
+ *             "path"="/promo"
+ *          }
  *      },
  *      itemOperations={
- *          "get","put","delete"
+ *           "get"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "normalization_context"={"groups"={"show_ref_formateur_group"}},
+ *             "controller"="App\Controller\PromoController::admin_promo_item",
+ *             "path"="/promo/{id}"
+ *          },
+ *          "admin_promo_principal"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "path"="/{id}/principal",
+ *             "methods"="GET",
+ *             "controller"="App\Controller\PromoController::admin_promo_principal_item"
+ *          },
+ *           "apprenants_attente"={
+ *             "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR')",
+ *             "security_message"="Vous n'avez pas acces à ce service",
+ *             "path"="admin/promo/{id}/apprenants/attente",
+ *             "methods"="GET",
+ *             "controller"="App\Controller\PromoController::apprenants_attente_item",
+ *             "normalization_context"={"groups"={"apprenants_attente"}}
+ *          },  
+ *            "referentiel_competence"={
+ *                  "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
+ *                  "security_message"="Vous n'avez pas acces à ce service",
+ *                  "path"="/promo/{id}/referentiel/",
+ *                  "methods"="GET",
+ *                  "controller"="App\Controller\PromoController::referentiel_competence",
+ *          },
+ *            "groupe_apprenants"={
+ *                  "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
+ *                  "security_message"="Vous n'avez pas acces à ce service",
+ *                  "path"="/promo/{id}/groupes/{idgroupe}/apprenants",
+ *                  "methods"="GET",
+ *                  "controller"="App\Controller\PromoController::groupe_apprenants",
+ *          },
+ *            "formateur_groupe"={
+ *                  "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
+ *                  "security_message"="Vous n'avez pas acces à ce service",
+ *                  "path"="/promo/{id}/formateurs",
+ *                  "methods"="GET",
+ *                  "controller"="App\Controller\PromoController::formateur_groupe",
+ *          },
+ *          "put","delete"
  *      })
  * @ORM\Entity(repositoryClass=PromoRepository::class)
  * @ApiFilter(BooleanFilter::class, properties={"archive"})
@@ -49,72 +100,82 @@ class Promo
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","groupe_apprenants"})
      */
     private $lieu;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $referenceAgate;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $dateDebut;
 
     /**
      * @ORM\Column(type="date")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $dateFin;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $langue;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $titre;
 
     /**
      * @ORM\OneToMany(targetEntity=Apprenant::class, mappedBy="promo")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      * @ApiSubresource()
      */
     private $apprenants;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $archive;
 
     /**
      * @ORM\OneToMany(targetEntity=GroupePromo::class, mappedBy="promo")
      * @ApiSubresource()
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_ref_formateur_group","formateur_groupe"})
      */
     private $groupePromos;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente","referentiel_competence","groupe_apprenants"})
      */
     private $avatar;
 
     /**
      * @ORM\ManyToOne(targetEntity=Referentiel::class, inversedBy="promos")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_apprenant_group","show_ref_formateur_group","apprenants_attente","referentiel_competence","groupe_apprenants","formateur_groupe"})
      */
     private $referentiel;
 

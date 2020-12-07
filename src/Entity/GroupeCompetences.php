@@ -78,10 +78,16 @@ class GroupeCompetences
      */
     private $competences;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Referentiel::class, mappedBy="groupeCompetences")
+     */
+    private $referentiels;
+
     public function __construct()
     {
         $this->archive = false;
         $this->competences = new ArrayCollection();
+        $this->referentiels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,7 +145,6 @@ class GroupeCompetences
             $this->competences[] = $competence;
             $competence->addGroupcompetence($this);
         }
-
         return $this;
     }
 
@@ -147,6 +152,32 @@ class GroupeCompetences
     {
         if ($this->competences->removeElement($competence)) {
             $competence->removeGroupcompetence($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection|Referentiel[]
+     */
+    public function getReferentiels(): Collection
+    {
+        return $this->referentiels;
+    }
+
+    public function addReferentiel(Referentiel $referentiel): self
+    {
+        if (!$this->referentiels->contains($referentiel)) {
+            $this->referentiels[] = $referentiel;
+            $referentiel->addGroupeCompetence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReferentiel(Referentiel $referentiel): self
+    {
+        if ($this->referentiels->removeElement($referentiel)) {
+            $referentiel->removeGroupeCompetence($this);
         }
 
         return $this;

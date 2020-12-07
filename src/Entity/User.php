@@ -42,7 +42,7 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("show_users")
+     * @Groups({"show_ref_formateur_group","show_users","show_apprenant_group","apprenants_attente"})
      */
     protected $id;
 
@@ -53,7 +53,7 @@ class User implements UserInterface
     protected $username;
 
     /**
-    * @Groups("show_profils")
+    * @Groups({"show_profils","show_apprenant_group","apprenants_attente"})
     * @Groups("show_users")
     * @Groups("affiche")
     */
@@ -70,7 +70,7 @@ class User implements UserInterface
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
      * @Groups("show_users")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups("affiche")
+     * @Groups({"affiche","show_apprenant_group","apprenants_attente"})
      */
     protected $profil;
 
@@ -78,7 +78,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      * @Groups("show_users_profils")
      * @Groups("show_users")
-     * @Groups("affiche")
+     * @Groups({"show_ref_formateur_group","affiche","show_apprenant_group","apprenants_attente"})
      */
     protected $prenom;
 
@@ -88,12 +88,14 @@ class User implements UserInterface
      * @Groups("show_users")
      * @Assert\NotBlank
      * @Groups("affiche")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
     protected $nom;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
      * @Groups("affiche")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
     protected $photo;
 
@@ -103,6 +105,7 @@ class User implements UserInterface
      *      message = "The email '{{ value }}' is not a valid email.")
      * @Assert\Regex("/^[a-zA-Z]([a-zA-Z] | [0-9])+@[a-z]\.[a-z]{3}$/")
      * @Groups("affiche")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
 
     protected $email;
@@ -110,6 +113,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean", nullable=true)
      * @Groups("affiche")
+     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
     protected $archive;
 

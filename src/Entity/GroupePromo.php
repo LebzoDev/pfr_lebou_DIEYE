@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
+use App\Entity\Formateur;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\GroupePromoRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -19,44 +21,54 @@ class GroupePromo
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_ref_formateur_group","groupe_apprenants","formateur_groupe"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_ref_formateur_group","groupe_apprenants","formateur_groupe"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="date")
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_ref_formateur_group","groupe_apprenants","formateur_groupe"})
      */
     private $dateCreation;
 
     /**
      * @ORM\ManyToOne(targetEntity=Promo::class, inversedBy="groupePromos")
      * @ORM\JoinColumn(nullable=false)
+     * @groups({"groupe_apprenants"})
      */
     private $promo;
 
 
     /**
      * @ORM\ManyToMany(targetEntity=Apprenant::class, inversedBy="mygroupePromos")
+     * ApiSubresource()
+     * @Groups({"groupe_apprenants"})
      */
     private $apprenants;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"show_ref_formateur_group"})
+     * @Groups({"show_ref_formateur_group","groupe_apprenants","formateur_groupe"})
      */
     private $archive;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Formateur::class, mappedBy="groupPromos")
+     * @ORM\ManyToMany(targetEntity=Formateur::class, inversedBy="groupePromos")
+     * @ApiSubresource()
      */
     private $formateurs;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"groupe_apprenants","formateur_groupe"})
+     */
+    private $type;
 
     public function __construct()
     {
@@ -155,7 +167,7 @@ class GroupePromo
     {
         if (!$this->formateurs->contains($formateur)) {
             $this->formateurs[] = $formateur;
-            $formateur->addGroupPromo($this);
+            $formateur->addGroupePromo($this);
         }
 
         return $this;
@@ -164,8 +176,20 @@ class GroupePromo
     public function removeFormateur(Formateur $formateur): self
     {
         if ($this->formateurs->removeElement($formateur)) {
-            $formateur->removeGroupPromo($this);
+            $formateur->removeGroupePromo($this);
         }
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

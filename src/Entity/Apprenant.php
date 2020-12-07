@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ApprenantRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Elasticsearch\DataProvider\Filter\MatchFilter;
 
 /**
  * @ApiResource(
@@ -37,18 +39,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *      },
  * })
  * @ORM\Entity(repositoryClass=ApprenantRepository::class)
+ *
  */
 class Apprenant extends User
 {
     /**
      * @ORM\ManyToOne(targetEntity=ProfilSortie::class, inversedBy="apprenants")
-     * @Groups("affiche")
+     * @Groups({"affiche","apprenants_attente"})
      */
     private $profilSortie;
 
     /**
      * @ORM\ManyToOne(targetEntity=Promo::class, inversedBy="apprenants")
-     * @Groups("affiche")
+     * @Groups({"affiche","apprenants_attente"})
      */
     private $promo;
 
@@ -56,6 +59,12 @@ class Apprenant extends User
      * @ORM\ManyToMany(targetEntity=GroupePromo::class, mappedBy="apprenants")
      */
     private $mygroupePromos;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"affiche","apprenants_attente"})
+     */
+    private $status;
 
     public function __construct()
     {
@@ -109,6 +118,18 @@ class Apprenant extends User
         if ($this->mygroupePromos->removeElement($mygroupePromo)) {
             $mygroupePromo->removeApprenant($this);
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
