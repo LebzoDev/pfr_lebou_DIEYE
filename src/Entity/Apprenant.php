@@ -20,8 +20,11 @@ use ApiPlatform\Core\Bridge\Elasticsearch\DataProvider\Filter\MatchFilter;
  *          "security_message"="Vous n'avez pas le droit !!!"
  *        },
  *       "post"={
- *          "security"="is_granted('ROLE_FORMATEUR')",
- *          "security_message"="Vous n'avez pas le droit !!!"
+ *          "deserialize"=false,
+ *          "security"="is_granted('ROLE_ADMINISTRATEUR')",
+ *          "security_message"="Vous n'avez pas le droit !!!",
+ *          "path"="/apprenants",
+ *          "controller"="App\Controller\UserController::addApprenant"
  *       }
  *  },
  * itemOperations = {

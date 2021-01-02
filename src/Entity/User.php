@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Profil;
 use Doctrine\ORM\Mapping as ORM;
+use App\Controller\UserController;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping\InheritanceType;
 use ApiPlatform\Core\Annotation\ApiFilter;
@@ -25,13 +26,24 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
  * @ApiResource(
  *    routePrefix="/admin",
- *    attributes={"pagination_items_per_page"=2 },
+ *    attributes={"pagination_items_per_page"=123 },
  *    normalizationContext={"groups"={"show_users"}},
  *    collectionOperations = {
- *      "get","post",
+ *      "get",
+ *      "post"={
+ *          "path"="/users",
+ *          "controller"="App\Controller\UserController::addUser",
+ *          "deserialize"=false,
+ *          },
  *  },
  * itemOperations = {
- *      "get","put","delete"
+ *      "get",
+ *      "put"={
+ *            "deserialize"=false,
+ *            "path"="/users/{id}",
+ *            "controller"="App\Controller\UserController::putUser"
+ *       },
+ *      "delete"
  * })
  * @ApiFilter(BooleanFilter::class, properties={"archive"})
  * 
@@ -68,17 +80,14 @@ class User implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity=Profil::class, inversedBy="users")
-     * @Groups("show_users")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"affiche","show_apprenant_group","apprenants_attente"})
+     * @Groups({"show_users","affiche","show_apprenant_group","apprenants_attente"})
      */
-    protected $profil;
 
+    protected $profil;
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("show_users_profils")
-     * @Groups("show_users")
-     * @Groups({"show_ref_formateur_group","affiche","show_apprenant_group","apprenants_attente"})
+     * @Groups({"show_users","show_users_profils","show_ref_formateur_group","affiche","show_apprenant_group","apprenants_attente"})
      */
     protected $prenom;
 
@@ -94,8 +103,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups("affiche")
-     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
+     * @Groups({"show_users","affiche","show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
     protected $photo;
 
@@ -103,20 +111,24 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Email(
      *      message = "The email '{{ value }}' is not a valid email.")
-     * @Assert\Regex("/^[a-zA-Z]([a-zA-Z] | [0-9])+@[a-z]\.[a-z]{3}$/")
+     * @Assert\Regex("/^[a-zA-Z0-9]*@[a-z]{2,}\.[a-z]{3}$/")
      * @Groups("affiche")
-     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
+     * @Groups({"affiche","show_users","show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
 
     protected $email;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
-     * @Groups("affiche")
-     * @Groups({"show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
+     * @Groups({"show_users","affiche","show_ref_formateur_group","show_apprenant_group","apprenants_attente"})
      */
     protected $archive;
+    
 
+    public function __construct(){
+        $this->archive=false;
+    }
+  
     public function getId(): ?int
     {
         return $this->id;
@@ -228,7 +240,9 @@ class User implements UserInterface
 
     public function getPhoto()
     {
-        return $this->photo;
+        $photo =@stream_get_contents($this->photo);
+        @fclose($this->photo);
+        return base64_encode($photo);
     }
 
     public function setPhoto($photo): self

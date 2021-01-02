@@ -14,12 +14,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
  * @ApiResource(
  *    routePrefix="/admin",
- *    attributes={"pagination_items_per_page"=2,
- *    "security"="is_granted('ROLE_USER')"},
+ *    attributes={"pagination_items_per_page"=10,
+ *    "security"="is_granted('ROLE_ADMINISTRATEUR')"},
  *    normalizationContext={"groups"={"show_profils"}},
  *    collectionOperations = {
  *      "get","post"
@@ -28,7 +29,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *      "get","put","delete"
  * })
  * @ORM\Entity(repositoryClass=ProfilRepository::class)
- * @ApiFilter(SearchFilter::class, properties={"archive": true})
+ * @ApiFilter(BooleanFilter::class, properties={"archive"})
  */
 class Profil
 {

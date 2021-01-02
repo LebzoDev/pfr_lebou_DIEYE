@@ -2,38 +2,35 @@
 
 namespace App\DataPersisters;
 
-
-use App\Entity\Profil;
+use App\Entity\Apprenant;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use ApiPlatform\Core\DataPersister\DataPersisterInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-
-class ProfilPersister implements DataPersisterInterface{
+class ApprenantPersister implements DataPersisterInterface{
 
     private $manager;
     private $request;
     private $decorated;
     private $normalized;
 
-    public function __construct(EntityManagerInterface $manager, RequestStack $request,NormalizerInterface $normalized){
+ public function __construct(EntityManagerInterface $manager, RequestStack $request){
         $this->manager = $manager;
-        $this->normalized = $normalized;
         $this->request = $request->getCurrentRequest();
     }
 
     public function supports($data): bool{
-        //dd($data);
-        return $data instanceof Profil;
+         //dd($data);
+        return $data instanceof Apprenant;
     }
 
     public function persist($data, array $context=[])
     {
       if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
-            $data->setArchive(false);
+             $data->setArchive(false);
             $this->manager->persist($data);
-            $this->manager->flush();
+            // $this->manager->flush();
+            dd($data);
         }else{
             $this->manager->persist($data);
             $this->manager->flush();
@@ -50,4 +47,5 @@ class ProfilPersister implements DataPersisterInterface{
         $this->manager->flush();
     }
     
+
 }
