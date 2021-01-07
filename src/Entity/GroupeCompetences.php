@@ -10,6 +10,7 @@ use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\GroupeCompetencesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
@@ -42,6 +43,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  * )
  * @ORM\Entity(repositoryClass=GroupeCompetencesRepository::class)
  *  @ApiFilter(BooleanFilter::class, properties={"archive"})
+ * @ApiFilter(SearchFilter::class,properties={"libelle":"exact"})
  */
 class GroupeCompetences
 {

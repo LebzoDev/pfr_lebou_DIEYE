@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use DateTime;
 use App\Entity\Promo;
+use App\Entity\Apprenant;
 use App\Entity\Formateur;
 use App\Entity\GroupePromo;
 use App\Repository\PromoRepository;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\GroupePromoRepository;
 use App\Repository\ReferentielRepository;
@@ -41,15 +43,20 @@ class PromoController extends AbstractController
      * @return void
      */
     public function post_promo(Request $request){
-        $tabCheck=['idreferentiel'];
-        $data = json_decode($request->getContent());
+        $tabCheck=['idreferentiel','lieu','referenceAgate','dateDebut','dateFin','description','langue','titre'];
+        
+        //$data = json_decode($request->getContent());
+        $data=$request->request->all();
+        $data_json = json_encode($data);
+        //dd($data_json);
+        //dd($request->request->all(),$request->files->get('excelFile'));
         $valide = true;
         foreach ($tabCheck as $key => $value) {
-           if (!isset($data->$value)) {
+           if (!isset($data[$value])) {
               $valide = false;
            }
         }
-        $referentiel = $this->repoReferentiel->findOneBy(['id'=>($data->idreferentiel)]);
+        $referentiel = $this->repoReferentiel->findOneBy(['id'=>($data['idreferentiel'])]);
         if (!isset($referentiel)) {
             $valide = false;
         }
@@ -59,12 +66,62 @@ class PromoController extends AbstractController
                              ->setNom('Groupe Principal')
                              ->setDateCreation(new DateTime);
 
-            $promo = $this->serialize->deserialize($request->getContent(),Promo::class,'json');
+            $promo = $this->serialize->deserialize($data_json,Promo::class,'json');
             $promo->setReferentiel($referentiel)
                   ->addGroupePromo($group_princicpal);
             $this->manager->persist($group_princicpal);
             $this->manager->persist($promo);
             $this->manager->flush();
+            
+
+            //Traitement du fichier excel
+            if($request->files->get('excelFile')){
+//----------------------------------------------------
+        //DEBUT RECUPERATION DES DONNEES DU FICHIERS EXCELS
+        //-----------------------------------------------------
+        
+        $doc = $request->files->get("excelFile");
+
+        // $reader = IOFactory::createReaderForFile($doc);
+        // //$reader->setReadDataOnly(true);
+
+        $file= IOFactory::identify($doc);
+        
+        $reader= IOFactory::createReader($file);
+
+        dd($file,$reader);
+
+        $spreadsheet=$reader->load($doc);
+        
+        $tab_apprenants= $spreadsheet->getActivesheet()->toArray();
+
+        $attr=$tab_apprenants[0];
+        $tabrjz=[];
+        for($i=1;$i<count($tab_apprenants);$i++)
+        {
+            $apprenant=new Apprenant();
+            for($k=0;$k<count($tab_apprenants[$i]);$k++)
+            {
+                $data=$tab_apprenants[$i][$k];
+                if($attr[$k]=="Password")
+                {
+                     $apprenant->setPassword($this->encoder->encodePassword($apprenant,$data));
+                }else
+                {
+                $apprenant->{"set".$attr[$k]}($data);
+                }
+            }
+            $apprenant->setArchive(false);
+            $apprenant->setStatus('attente');
+            $this->manager->persist($apprenant);
+            $group_princicpal->addApprenant($apprenant);
+        }
+
+        //------------------------------------------------------
+        //FIN RECUPERATION DES DONNEES DU FICHIERS EXCELS
+        //-----------------------------------------------------
+            }
+
             return $this->json($promo,200);
         }else{
             return $this->json(['message'=>'failed'],401);

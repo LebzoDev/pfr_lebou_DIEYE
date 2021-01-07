@@ -4,14 +4,25 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ReferentielRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      routePrefix="/admin",
+ *      collectionOperations={
+ *          "get","post",
+ *      },
+ *      itemOperations={
+ *          "get","put","delete",   
+ *      }
+ * )
  * @ORM\Entity(repositoryClass=ReferentielRepository::class)
+ * @ApiFilter(BooleanFilter::class, properties={"archive"})
  */
 class Referentiel
 {

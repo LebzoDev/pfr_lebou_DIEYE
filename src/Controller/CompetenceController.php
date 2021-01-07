@@ -33,12 +33,15 @@ class CompetenceController extends AbstractController
         foreach ($tabCheck as $key => $value) {
            if (!isset($data->$value)) {
               $valide = false;
+              $chaine="probleme tableau";
            }
         }
-        
-        $grpcomptence = $this->repoGroupeCompetence->findOneBy(['id'=>$data->idgroupcompetence]);
-        if (!isset($grpcomptence)) {
+        $id = $data->idgroupcompetence;
+        $grpcomptence = $this->repoGroupeCompetence->findOneBy(['id'=>$id]);
+        if (!($grpcomptence)) {
             $valide = false;
+            $value = gettype($data->idgroupcompetence);
+            $chaine="probleme id group competence".$id;
         }
 
         if($valide){
@@ -61,7 +64,7 @@ class CompetenceController extends AbstractController
             $this->manager->flush();
             return $this->json(['message'=>'success'],Response::HTTP_OK);
         }else {
-            return $this->json(['message'=>'Veuillez remplir toutes les données et respecter les champs'],Response::HTTP_NOT_FOUND);
+            return $this->json(['message'=>'Veuillez remplir toutes les données et respecter les champs'.$chaine],Response::HTTP_NOT_FOUND);
         }
     }
 

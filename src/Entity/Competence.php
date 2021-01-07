@@ -10,11 +10,13 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
  * @ApiResource(
  *      routePrefix="/admin",
+ *       attributes={"pagination_items_per_page"=20},
  *      collectionOperations={
  *          "get"={
  *              "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
@@ -38,6 +40,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  * )
  * @ORM\Entity(repositoryClass=CompetenceRepository::class)
  * @ApiFilter(BooleanFilter::class, properties={"archive"})
+ * @ApiFilter(SearchFilter::class,properties={"libelle":"exact"})
  */
 class Competence
 {

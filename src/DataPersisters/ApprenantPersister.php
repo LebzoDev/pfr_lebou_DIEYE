@@ -29,8 +29,7 @@ class ApprenantPersister implements DataPersisterInterface{
       if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
              $data->setArchive(false);
             $this->manager->persist($data);
-            // $this->manager->flush();
-            dd($data);
+             $this->manager->flush();
         }else{
             $this->manager->persist($data);
             $this->manager->flush();
@@ -39,11 +38,6 @@ class ApprenantPersister implements DataPersisterInterface{
     
     public function remove($data){
         $data->setArchive(true);
-        $users = $data->getUsers();
-        foreach ($users as $key => $user) {
-           $user->setArchive(true);
-        }
-        $this->manager->persist($data);
         $this->manager->flush();
     }
     
