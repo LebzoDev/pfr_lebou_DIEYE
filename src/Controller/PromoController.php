@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use DateTime;
+use ZipArchive;
 use App\Entity\Promo;
 use App\Entity\Apprenant;
 use App\Entity\Formateur;
@@ -11,6 +12,7 @@ use App\Repository\PromoRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\GroupePromoRepository;
+use App\Repository\ProfilRepository;
 use App\Repository\ReferentielRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PromoController extends AbstractController
 {
@@ -27,13 +30,17 @@ class PromoController extends AbstractController
     private $normalize;
     private $repoReferentiel;
     private $serialize;
-    public function __construct(EntityManagerInterface $manager,ReferentielRepository $repoReferentiel,PromoRepository $repoPromo,SerializerInterface $serialize,DenormalizerInterface $normalize,GroupePromoRepository $repoGroupPromo){
+    private $encoder;
+    private $repoProfil;
+    public function __construct(ProfilRepository $repoProfil,UserPasswordEncoderInterface $encoder,EntityManagerInterface $manager,ReferentielRepository $repoReferentiel,PromoRepository $repoPromo,SerializerInterface $serialize,DenormalizerInterface $normalize,GroupePromoRepository $repoGroupPromo){
         $this->repoPromo = $repoPromo;
         $this->manager = $manager;
         $this->normalize = $normalize;
         $this->repoGroupPromo = $repoGroupPromo;
         $this->serialize = $serialize;
         $this->repoReferentiel = $repoReferentiel;
+        $this->encoder = $encoder;
+        $this->repoProfil= $repoProfil;
     }
 
     /**
@@ -66,8 +73,17 @@ class PromoController extends AbstractController
                              ->setNom('Groupe Principal')
                              ->setDateCreation(new DateTime);
 
-            $promo = $this->serialize->deserialize($data_json,Promo::class,'json');
-            $promo->setReferentiel($referentiel)
+            //$promo = $this->serialize->deserialize($data_json,Promo::class,'json');
+            $promo = new Promo();
+            $promo->setDateDebut(new \DateTime($data['dateDebut']))
+                  ->setDateFin(new DateTime($data['dateFin']))
+                  ->setLangue($data['langue'])
+                  ->setTitre($data['titre'])
+                  ->setDescription($data['description'])
+                  ->setLieu($data['lieu'])
+                  ->setReferenceAgate($data['referenceAgate'])
+                  ->setArchive(false)
+                  ->setReferentiel($referentiel)
                   ->addGroupePromo($group_princicpal);
             $this->manager->persist($group_princicpal);
             $this->manager->persist($promo);
@@ -81,48 +97,68 @@ class PromoController extends AbstractController
         //-----------------------------------------------------
         
         $doc = $request->files->get("excelFile");
-
         // $reader = IOFactory::createReaderForFile($doc);
-        // //$reader->setReadDataOnly(true);
-
+        // //$reader->setReadDataOnly(true);    
         $file= IOFactory::identify($doc);
         
         $reader= IOFactory::createReader($file);
-
-        dd($file,$reader);
 
         $spreadsheet=$reader->load($doc);
         
         $tab_apprenants= $spreadsheet->getActivesheet()->toArray();
 
+        //dd($file,$reader,$spreadsheet,$tab_apprenants);
+    
+        $waited_Array=['prenom','nom','email','username','password'];
+       
         $attr=$tab_apprenants[0];
-        $tabrjz=[];
+
+        $valide_excel= true;
+        foreach($waited_Array as $element){
+            if (!in_array($element, $attr)) {
+                $valide_excel= false;
+                $chaine=$element;
+
+                break;
+            }
+        }
+        //dd($valide_excel,$attr,$waited_Array==$attr);
+        if($valide_excel){
+        $profil = $this->repoProfil->findOneByLibelle(['APPRENANT']);
         for($i=1;$i<count($tab_apprenants);$i++)
         {
-            $apprenant=new Apprenant();
+            $apprenant = new Apprenant();
             for($k=0;$k<count($tab_apprenants[$i]);$k++)
             {
                 $data=$tab_apprenants[$i][$k];
-                if($attr[$k]=="Password")
+                if($attr[$k]=="password")
                 {
                      $apprenant->setPassword($this->encoder->encodePassword($apprenant,$data));
                 }else
                 {
-                $apprenant->{"set".$attr[$k]}($data);
+                $apprenant->{"set".ucfirst($attr[$k])}($data);
                 }
             }
+            $apprenant->setProfil($profil);
             $apprenant->setArchive(false);
             $apprenant->setStatus('attente');
             $this->manager->persist($apprenant);
             $group_princicpal->addApprenant($apprenant);
         }
-
+        $this->manager->flush();
+        return $this->json(['message'=>'Promo Ajoutée avec success','promo'=>$promo],200);
+        }else{
+            return $this->json(['message'=>'failed','excle'=>$tab_apprenants],401);
+        }
         //------------------------------------------------------
         //FIN RECUPERATION DES DONNEES DU FICHIERS EXCELS
         //-----------------------------------------------------
-            }
+            //return $this->json($promo,200);
+        }else{
+            return $this->json(['message'=>'failed'],401);
+        }
 
-            return $this->json($promo,200);
+           
         }else{
             return $this->json(['message'=>'failed'],401);
         }
