@@ -7,6 +7,7 @@ use App\Repository\ReferentielRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
@@ -15,7 +16,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  * @ApiResource(
  *      routePrefix="/admin",
  *      collectionOperations={
- *          "get","post",
+ *          "get",
+ *          "post"={
+ *                 "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM')",
+ *                 "security_message"="Vous n'avez pas acces à cette ressource",
+ *                 "path"="/referentiels",
+ *                 "controller"="App\Controller\ReferentileController::addReferentiel",
+ *                 "deserialize"=false,     
+ *           },
  *      },
  *      itemOperations={
  *          "get","put","delete",   
@@ -47,16 +55,16 @@ class Referentiel
     private $presentation;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="blob", nullable=true)
      * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $programme;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
-     */
-    private $criteres;
+    // /**
+    //  * @ORM\Column(type="string", length=255, nullable=true)
+    //  * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
+    //  */
+    // private $criteres;
 
     /**
      * @ORM\Column(type="boolean")
@@ -72,14 +80,22 @@ class Referentiel
 
     /**
      * @ORM\OneToMany(targetEntity=Promo::class, mappedBy="referentiel")
+     * @ApiSubresource()
      */
     private $promos;
 
     /**
      * @ORM\ManyToMany(targetEntity=GroupeCompetences::class, inversedBy="referentiels")
+     * @ApiSubresource()
      * @Groups({"referentiel_competence"})
      */
     private $groupeCompetences;
+
+    /**
+     * @ORM\OneToMany(targetEntity=CriteresReferentiel::class, mappedBy="referenceReferentiel")
+     * @ApiSubresource()
+     */
+    private $criteresReferentiels;
 
     public function __construct()
     {
@@ -87,6 +103,7 @@ class Referentiel
         $this->competencesVisees = new ArrayCollection();
         $this->promos = new ArrayCollection();
         $this->groupeCompetences = new ArrayCollection();
+        $this->criteresReferentiels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -118,29 +135,31 @@ class Referentiel
         return $this;
     }
 
-    public function getProgramme(): ?string
+    public function getProgramme()
     {
-        return $this->programme;
+        $programme =@stream_get_contents($this->programme);
+        @fclose($this->programme);
+        return base64_encode($programme);
     }
 
-    public function setProgramme(?string $programme): self
+    public function setProgramme($programme): self
     {
         $this->programme = $programme;
 
         return $this;
     }
 
-    public function getCriteres(): ?string
-    {
-        return $this->criteres;
-    }
+    // public function getCriteres(): ?string
+    // {
+    //     return $this->criteres;
+    // }
 
-    public function setCriteres(?string $criteres): self
-    {
-        $this->criteres = $criteres;
+    // public function setCriteres(?string $criteres): self
+    // {
+    //     $this->criteres = $criteres;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getArchive(): ?bool
     {
@@ -228,6 +247,36 @@ class Referentiel
     public function removeGroupeCompetence(GroupeCompetences $groupeCompetence): self
     {
         $this->groupeCompetences->removeElement($groupeCompetence);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CriteresReferentiel[]
+     */
+    public function getCriteresReferentiels(): Collection
+    {
+        return $this->criteresReferentiels;
+    }
+
+    public function addCriteresReferentiel(CriteresReferentiel $criteresReferentiel): self
+    {
+        if (!$this->criteresReferentiels->contains($criteresReferentiel)) {
+            $this->criteresReferentiels[] = $criteresReferentiel;
+            $criteresReferentiel->setReferenceReferentiel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCriteresReferentiel(CriteresReferentiel $criteresReferentiel): self
+    {
+        if ($this->criteresReferentiels->removeElement($criteresReferentiel)) {
+            // set the owning side to null (unless already changed)
+            if ($criteresReferentiel->getReferenceReferentiel() === $this) {
+                $criteresReferentiel->setReferenceReferentiel(null);
+            }
+        }
 
         return $this;
     }

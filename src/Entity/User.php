@@ -26,7 +26,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
  * @ApiResource(
  *    routePrefix="/admin",
- *    attributes={"pagination_items_per_page"=123 },
+ *    attributes={"pagination_items_per_page"=25 },
  *    normalizationContext={"groups"={"show_users"}},
  *    collectionOperations = {
  *      "get",

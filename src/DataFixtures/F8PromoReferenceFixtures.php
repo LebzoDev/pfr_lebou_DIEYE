@@ -11,6 +11,7 @@ use App\Entity\GroupePromo;
 use App\Entity\Referentiel;
 use App\Repository\ProfilRepository;
 use App\DataFixtures\F1ProfilFixtures;
+use App\Entity\CriteresReferentiel;
 use App\Repository\ApprenantRepository;
 use App\Repository\FormateurRepository;
 use Doctrine\Persistence\ObjectManager;
@@ -46,8 +47,19 @@ class F8PromoReferenceFixtures extends Fixture
            $referentiel = new Referentiel();
            $referentiel->setLibelle($faker->word)
                        ->setPresentation($faker->word)
-                       ->setProgramme($faker->text(50))
-                       ->setCriteres($faker->text(100));
+                       ->setProgramme($faker->text(50));
+        //BOUCLE POUR LES CRIETERES REFERENTIELS
+        $criteres_array=['admission','evaluation'];
+        for ($h=0; $h < 9 ; $h++) {
+            shuffle($criteres_array);
+            $crit_referentiel = new CriteresReferentiel();
+            $crit_referentiel->setLibelle($faker->word)
+                              ->setType($criteres_array[0])
+                              ->setArchive(false);
+            $manager->persist($crit_referentiel);
+            $referentiel->addCriteresReferentiel($crit_referentiel);
+        }
+                       //->setCriteres($faker->text(100));
                              
             //BOUCLE POUR LES PROMOS          
             for ($i=1; $i <=3 ; $i++) {
@@ -86,9 +98,10 @@ class F8PromoReferenceFixtures extends Fixture
                         ->setNom($faker->lastName)
                         ->setUsername($faker->userName)
                         ->setPassword($this->encoder->encodePassword($user,"passer"))
-                        ->setArchive(false)
-                        ->setPromo($promo)
-                        ->addMygroupePromo($groupPromo);    
+                        ->setArchive(false);
+                    $user->setPromo($promo)
+                         ->addMygroupePromo($groupPromo);
+                       
                     $manager->persist($user);
                 }
                 $promo->addGroupePromo($groupPromo);

@@ -55,7 +55,7 @@ class PromoController extends AbstractController
         //$data = json_decode($request->getContent());
         $data=$request->request->all();
         $data_json = json_encode($data);
-        //dd($data_json);
+        
         //dd($request->request->all(),$request->files->get('excelFile'));
         $valide = true;
         foreach ($tabCheck as $key => $value) {
@@ -117,8 +117,6 @@ class PromoController extends AbstractController
         foreach($waited_Array as $element){
             if (!in_array($element, $attr)) {
                 $valide_excel= false;
-                $chaine=$element;
-
                 break;
             }
         }
