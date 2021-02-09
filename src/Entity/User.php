@@ -46,6 +46,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  *      "delete"
  * })
  * @ApiFilter(BooleanFilter::class, properties={"archive"})
+ * @ApiFilter(SearchFilter::class, properties={"profil"="exact"})
  * 
  */
 class User implements UserInterface
