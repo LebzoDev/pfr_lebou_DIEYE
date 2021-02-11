@@ -20,7 +20,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  *      collectionOperations={
  *          "get"={
  *              "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_FORMATEUR') or is_granted('ROLE_CM')",
- *              "security_message"="vous n'avez pas acces à ce resource"
+ *              "security_message"="vous n'avez pas acces à ce resource",
+ *              "normalization_context"={"groups"={"show_competences"}},
  *           },
  *          "post"={
  *              "security"="is_granted('ROLE_ADMINISTRATEUR')",
@@ -49,24 +50,28 @@ class Competence
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $descriptif;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups("show_cgrpompetences")
+     * @Groups("show_competences")
      */
     private $archive;
 
@@ -78,6 +83,8 @@ class Competence
 
     /**
      * @ORM\OneToMany(targetEntity=Niveau::class, mappedBy="competence", orphanRemoval=true)
+     * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      * @ApiSubresource()
      */
     private $niveaux;

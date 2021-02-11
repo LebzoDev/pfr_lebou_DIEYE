@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\NiveauRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\NiveauRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource()
@@ -16,21 +17,29 @@ class Niveau
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $critereDevaluation;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups("show_grpcompetences")
+     * @Groups("show_competences")
      */
     private $groupDactions;
 

@@ -16,13 +16,15 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  * @ApiResource(
  *      routePrefix="/admin",
  *      collectionOperations={
- *          "get",
+ *          "get"={
+ *               "normalization_context"={"groups"={"show_referentiels"}},
+ *           },
  *          "post"={
  *                 "security"="is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_CM')",
  *                 "security_message"="Vous n'avez pas acces à cette ressource",
  *                 "path"="/referentiels",
  *                 "controller"="App\Controller\ReferentileController::addReferentiel",
- *                 "deserialize"=false,     
+ *                 "deserialize"=false,
  *           },
  *      },
  *      itemOperations={
@@ -38,25 +40,25 @@ class Referentiel
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
+     * @Groups({"show_referentiels","formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
+     * @Groups({"show_referentiels","formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
+     * @Groups({"show_referentiels","formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $presentation;
 
     /**
      * @ORM\Column(type="blob", nullable=true)
-     * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
+     * @Groups({"show_referentiels","formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $programme;
 
@@ -68,13 +70,13 @@ class Referentiel
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
+     * @Groups({"show_referentiels","formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $archive;
 
     /**
      * @ORM\ManyToMany(targetEntity=Competence::class, inversedBy="referentiels")
-     * @Groups({"referentiel_competence"})
+     * @Groups({"referentiel_competence","show_referentiels"})
      */
     private $competencesVisees;
 
@@ -87,12 +89,13 @@ class Referentiel
     /**
      * @ORM\ManyToMany(targetEntity=GroupeCompetences::class, inversedBy="referentiels")
      * @ApiSubresource()
-     * @Groups({"referentiel_competence"})
+     * @Groups({"referentiel_competence","show_referentiels"})
      */
     private $groupeCompetences;
 
     /**
      * @ORM\OneToMany(targetEntity=CriteresReferentiel::class, mappedBy="referenceReferentiel")
+     * @Groups({"show_referentiels"})
      * @ApiSubresource()
      */
     private $criteresReferentiels;
