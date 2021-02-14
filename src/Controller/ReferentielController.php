@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -39,6 +40,9 @@ class ReferentielController extends AbstractController
         $tabCheck=['libelle','presentation','groupCompetences','admission','evaluation'];
         $data=$request->request->all();
         $programme = $request->files->get('pdfFile');
+        if (isset($programme)) {
+             $programme = fopen($programme->getRealPath(),"rb");
+        }
 
         $valide = true;
         foreach ($tabCheck as $key => $value) {
@@ -60,8 +64,7 @@ class ReferentielController extends AbstractController
                     $this->manager->persist($critereRef);
                     $referentiel->addCriteresReferentiel($critereRef);
                 }
-                foreach (json_decode($data['evaluation']) as $evaluation) {
-               
+                foreach (json_decode($data['evaluation']) as $evaluation) {              
                     $critereRef = new CriteresReferentiel();
                     $critereRef->setLibelle($evaluation)
                                ->setType('evaluation')
@@ -80,6 +83,10 @@ class ReferentielController extends AbstractController
                             ->setPresentation($data['presentation'])
                             ->setProgramme($programme)
                             ->setArchive(false);
+                //  while($referentiel->getProgramme()==null || $referentiel->getProgramme()==''){
+                //         //$programme = stream_get_contents($programme);
+                //         $referentiel->setProgramme($programme);
+                // }
                 $this->manager->persist($referentiel);
                 $this->manager->flush();
                 return $this->json(['message'=>'SUCCESS','class'=>get_class($referentiel),'Referentiel'=>$referentiel],201);

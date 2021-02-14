@@ -15,6 +15,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 /**
  * @ApiResource(
  *      routePrefix="/admin",
+ *      normalizationContext={"groups"={"show_referentiels"}},
  *      collectionOperations={
  *          "get"={
  *               "normalization_context"={"groups"={"show_referentiels"}},
@@ -61,12 +62,6 @@ class Referentiel
      * @Groups({"show_referentiels","formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
      */
     private $programme;
-
-    // /**
-    //  * @ORM\Column(type="string", length=255, nullable=true)
-    //  * @Groups({"formateur_groupe","show_ref_formateur_group","apprenants_attente","show_apprenant_group","referentiel_competence","groupe_apprenants"})
-    //  */
-    // private $criteres;
 
     /**
      * @ORM\Column(type="boolean")
@@ -143,26 +138,15 @@ class Referentiel
         $programme =@stream_get_contents($this->programme);
         @fclose($this->programme);
         return base64_encode($programme);
+        //return $programme;
     }
 
-    public function setProgramme($programme): self
+    public function setProgramme($programme_pdf): self
     {
-        $this->programme = $programme;
+        $this->programme=$programme_pdf;
 
         return $this;
     }
-
-    // public function getCriteres(): ?string
-    // {
-    //     return $this->criteres;
-    // }
-
-    // public function setCriteres(?string $criteres): self
-    // {
-    //     $this->criteres = $criteres;
-
-    //     return $this;
-    // }
 
     public function getArchive(): ?bool
     {

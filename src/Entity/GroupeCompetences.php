@@ -51,25 +51,25 @@ class GroupeCompetences
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups("show_grpcompetences")
+     * @Groups({"show_grpcompetences","show_referentiels"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("show_grpcompetences")
+     * @Groups({"show_grpcompetences","show_referentiels"})
      */
     private $libelle;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups("show_grpcompetences")
+     * @Groups({"show_grpcompetences","show_referentiels"})
      */
     private $descriptif;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups("show_grpcompetences")
+     * @Groups({"show_grpcompetences","show_referentiels"})
      */
     private $archive;
 
