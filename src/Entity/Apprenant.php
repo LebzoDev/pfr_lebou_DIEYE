@@ -34,8 +34,17 @@ use ApiPlatform\Core\Bridge\Elasticsearch\DataProvider\Filter\MatchFilter;
  *        },
  *      "put"={
  *          "security"="is_granted('APP_EDIT', object) and object",
- *          "security_message"="Vous n'avez pas le droit"
+ *          "security_message"="Vous n'avez pas le droit",
+ *          "deserialize"=false
  *      },
+ *      "active_apprenant"={
+ *          "security"="is_granted('APP_EDIT', object) and object",
+ *          "security_message"="Vous n'avez pas le droit",
+ *           "method"="put",
+ *          "deserialize"=false,
+ *          "path"="/apprenants_active/{id}",
+ *          "controller"="App\Controller\UserController::activeApprenant"
+ *       },
  *      "delete"={
  *          "security"="is_granted('APP_DELETE', object) and object",
  *          "security_message"="Vous n'avez pas le droit"

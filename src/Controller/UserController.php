@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Apprenant;
+use App\Repository\ApprenantRepository;
 use App\Service\AddUtilisateur;
 use App\Repository\UserRepository;
 use App\Repository\ProfilRepository;
@@ -25,13 +26,15 @@ class UserController extends AbstractController
     private $repoUser; 
     private $repoprofil;
     private $security;
-    public function __construct(Security $security,EntityManagerInterface $manager,UserPasswordEncoderInterface $encoder, ProfilRepository $repoprofil,UserRepository $repoUser)
+    private $repo_apprenant;
+    public function __construct(Security $security,EntityManagerInterface $manager,UserPasswordEncoderInterface $encoder, ProfilRepository $repoprofil,UserRepository $repoUser,ApprenantRepository $repo_apprenant)
     {
         $this->encoder=$encoder;
         $this->manager = $manager;
         $this->repoprofil = $repoprofil;
         $this->repoUser = $repoUser;
         $this->security = $security;
+        $this->repo_apprenant = $repo_apprenant;
     }
     /**
      * @Route(
@@ -122,7 +125,7 @@ class UserController extends AbstractController
         }
         //$mail = $this->security->getUser()->getEmail();
         $message = (new \Swift_Message('Hello Email'))  
-            ->setFrom('lucky96123@gmail.com')
+            ->setFrom('luckylucky96123@gmail.com')
             ->setTo('leboundiayee123@gmail.com')
             ->setBody("Bonjour cher(e) apprenant(e), vous avez été selection à la Formation SONATEL ACADEMY
                 .Veuillez confirmer afin de nous rejoindre.");
@@ -193,5 +196,69 @@ class UserController extends AbstractController
         $this->manager->flush();
 
         return $this->json(['message'=>'success'],201);
+    }
+
+      /**
+     * @Route(
+     *     name="putUser",
+     *     path="api/apprenants_active/{id}",
+     *     methods={"put"},
+     *     defaults={
+     *          "__api_resource_class"=User::class,
+     *     }
+     * )
+     */
+    public function activeApprenant(Request $request,$id,AddUtilisateur $getFields)
+    {
+        
+        $userDonne = $this->repo_apprenant->findOneBy(['id'=>$id]);
+
+           $data = $request->getContent();
+        // $array = $request->request->all();
+        // $photo = $request->files->get("photo");
+        // if (isset($photo)) {
+        //     $photo = fopen($photo->getRealPath(),"rb");
+        //     $userDonne->setPhoto($photo);
+        // }
+
+        //Définir le tableau qui contiendra les données recupérées
+            $dataGot = [];
+        //Appliquer la fonction de notre service
+            $dataGot = $getFields->transformData($data);
+
+            //dd($userDonne,$dataGot);
+            
+            // $userDonne->setPrenom($array['prenom']);
+            // $userDonne->setNom($array['nom']);
+            // $userDonne->setUsername($array['username']);
+            // $userDonne->setPassword($array['password']);
+            // $userDonne->setEmail($array['email']);
+            // $profil = $this->repoprofil->findOneBy(['id'=>$array['id']]);
+            // $password = $userDonne->getPassword();
+            // $userDonne->setPassword($this->encoder->encodePassword($userDonne,$password));
+            // if(isset($profil)){
+            //     $userDonne->setProfil($profil);
+            // }else{
+            //     return $this->json("echec",400);
+            // }
+
+        // dd($dataGot);
+
+            if (isset($dataGot['photo'])) {
+                $photo = fopen('php://memory','r+');
+                fwrite($photo, $dataGot['photo']);
+                rewind($photo);
+            }
+            foreach ($dataGot as $key => $value) {
+                $methode = 'set'.ucfirst($key);
+                if(method_exists($userDonne,$methode)){
+                    $userDonne->$methode($value);
+                }
+            }
+        $userDonne->setStatus('active');
+        $this->manager->persist($userDonne);
+        $this->manager->flush();
+
+        return $this->json(['message'=>'success active apprenant','donnees'=>$dataGot],200);
     }
 }

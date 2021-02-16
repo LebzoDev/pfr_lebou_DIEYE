@@ -90,27 +90,17 @@ class PromoController extends AbstractController
             $this->manager->flush();
             
 
-            //Traitement du fichier excel
-            if($request->files->get('excelFile')){
-//----------------------------------------------------
+        //Traitement du fichier excel
+        if($request->files->get('excelFile')){
+        //----------------------------------------------------
         //DEBUT RECUPERATION DES DONNEES DU FICHIERS EXCELS
         //-----------------------------------------------------
-        
         $doc = $request->files->get("excelFile");
-        // $reader = IOFactory::createReaderForFile($doc);
-        // //$reader->setReadDataOnly(true);    
         $file= IOFactory::identify($doc);
-        
         $reader= IOFactory::createReader($file);
-
         $spreadsheet=$reader->load($doc);
-        
-        $tab_apprenants= $spreadsheet->getActivesheet()->toArray();
-
-        //dd($file,$reader,$spreadsheet,$tab_apprenants);
-    
+        $tab_apprenants= $spreadsheet->getActivesheet()->toArray();    
         $waited_Array=['prenom','nom','email','username','password'];
-       
         $attr=$tab_apprenants[0];
 
         $valide_excel= true;
@@ -245,6 +235,7 @@ class PromoController extends AbstractController
     public function apprenants_attente()
     {
        $promos = $this->repoPromo->findAll();
+       $tabApprenants_Attente=array();
        $tabPromos = $this->normalize->normalize($promos,null,['groups'=>["apprenants_attente"]]);
        foreach ($tabPromos as $keyPromo => $promo) {
            $tabApprenants = $promo['apprenants'];
@@ -252,10 +243,13 @@ class PromoController extends AbstractController
                if ($apprennant['status'] != 'attente') {
                    unset($tabApprenants[$keyApp]);
                }
+               if ($apprennant['status'] == 'attente') {
+                    $tabApprenants_Attente[]=$apprennant;
+              }
            }
            $tabPromos[$keyPromo]['apprenants']=$tabApprenants;
        }
-       return $this->json($tabPromos,200,[],['groups'=>["apprenants_attente"]]);
+       return $this->json($tabApprenants_Attente,200,[],['groups'=>["apprenants_attente"]]);
     }
      /**
      * @Route("api/admin/promo/{id}/apprenants/attente", name="apprenants_attente_item", methods={"GET"})

@@ -30,7 +30,6 @@ class PromoPersister implements DataPersisterInterface{
     {
       if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
             $data->setArchive(false);
-            dd($data);
             $this->manager->persist($data);
             $this->manager->flush();
         }

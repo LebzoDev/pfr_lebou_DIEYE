@@ -26,11 +26,13 @@ class ApprenantPersister implements DataPersisterInterface{
 
     public function persist($data, array $context=[])
     {
+    $array = json_encode($data);
       if (isset($context['collection_operation_name']) && $context['collection_operation_name']=='post'){
              $data->setArchive(false);
             $this->manager->persist($data);
              $this->manager->flush();
         }else{
+            //$data->setStatus('active');
             $this->manager->persist($data);
             $this->manager->flush();
         }
@@ -38,6 +40,7 @@ class ApprenantPersister implements DataPersisterInterface{
     
     public function remove($data){
         $data->setArchive(true);
+        $this->persist($data);
         $this->manager->flush();
     }
     
