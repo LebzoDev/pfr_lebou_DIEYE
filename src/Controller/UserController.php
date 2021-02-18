@@ -104,7 +104,7 @@ class UserController extends AbstractController
             $photo = fopen($photo->getRealPath(),"rb");
             $user->setPhoto($photo);
         }
-        //dd($array);
+     
         $user->setPrenom($array['prenom']);
         $user->setNom($array['nom']);
         $user->setUsername($array['username']);
@@ -260,5 +260,32 @@ class UserController extends AbstractController
         $this->manager->flush();
 
         return $this->json(['message'=>'success active apprenant','donnees'=>$dataGot],200);
+    }
+
+     /**
+     * @Route(
+     *     name="putUser",
+     *     path="api/apprenants_relance/{id}",
+     *     methods={"put"},
+     *     defaults={
+     *          "__api_resource_class"=User::class,
+     *     }
+     * )
+     */
+    public function relanceApprenant(Request $request,$id,AddUtilisateur $getFields,\Swift_Mailer $mailer)
+    {    
+        $userDonne = $this->repo_apprenant->findOneBy(['id'=>$id]);
+        if ($userDonne) {
+                $message = (new \Swift_Message('SONATEL ACADEMY'))  
+                ->setFrom('luckylucky96123@gmail.com')
+                ->setTo($userDonne->getEmail())
+                ->setBody("Bonjour cher(e) apprenant(e), vous avez été selection à la Formation SONATEL ACADEMY
+                    .Veuillez nous rejoindre sure ce lien ci apres afin confirmer votre place au cette nouvelle
+                    cohorte:\n https://www.academysonatel.com/");
+                $mailer->send($message);
+                return $this->json(['message'=>'Un messsage a été envoyé à l\'apprenannt','Resultat'=>'SUCCESS'],200);
+            }else{
+                return $this->json(['message'=>'Attention le message na pas été envoyé avec succes'],404);
+            }
     }
 }
