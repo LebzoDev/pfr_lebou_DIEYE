@@ -96,9 +96,11 @@ class PromoController extends AbstractController
         //DEBUT RECUPERATION DES DONNEES DU FICHIERS EXCELS
         //-----------------------------------------------------
         $doc = $request->files->get("excelFile");
+
         $file= IOFactory::identify($doc);
         $reader= IOFactory::createReader($file);
         $spreadsheet=$reader->load($doc);
+
         $tab_apprenants= $spreadsheet->getActivesheet()->toArray();    
         $waited_Array=['prenom','nom','email','username','password'];
         $attr=$tab_apprenants[0];
@@ -132,6 +134,7 @@ class PromoController extends AbstractController
             $apprenant->setStatus('attente');
             $this->manager->persist($apprenant);
             $group_princicpal->addApprenant($apprenant);
+            $promo->addApprenant($apprenant);
         }
         $this->manager->flush();
         return $this->json(['message'=>'Promo Ajoutée avec success','promo'=>$promo],200);
